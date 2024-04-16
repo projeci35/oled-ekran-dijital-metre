@@ -1,0 +1,48 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define OLED_RESET    -1
+Adafruit_SSD1306 display(OLED_RESET);
+
+const int trigPin = 9; // Ultrasonik sensörün TRIG pini
+const int echoPin = 10; // Ultrasonik sensörün ECHO pini
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println(F("SSD1306 ekranı bulunamadı."));
+    for (;;);
+  }
+  display.clearDisplay();
+  display.display();
+  delay(1000);
+}
+
+void loop() {
+  long duration, distance;
+  
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  duration = pulseIn(echoPin, HIGH);
+  
+  distance = duration * 0.034 / 2; // Süreyi mesafeye çevirme formülü
+  
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.print("Mesafe: ");
+  display.print(distance);
+  display.println(" cm");
+  display.display();
+  
+  delay(1000);
+}
